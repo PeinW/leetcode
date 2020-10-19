@@ -1,0 +1,28 @@
+"""
+1. 第一眼想到的是排列组合问题，C(m, n) 问题
+  分为两部分， 第一部分全排列 n!, 第二部分根据空位跟可以填充的值的个数再做一次排列
+  ---尝试失败---
+2. 动态规划
+  定义函数f(n,l,k)表示n首歌填充l个位置，相同歌的间隔超过k。那么，我们对于第l个位置来说只有两种情况
+  之前没有相同的歌，也就是说n-1首歌填充了前面l-1个位置，即f(n-1,l-1,k)
+  之前有相同的歌，也就是说n首歌填充了前面l-1个位置，即f(n,l-1,k)
+  对于第一种情况，因为有n首歌，所以会出现n次。而对于第二种情况，由于相同的歌不能间隔k，所以会出现n-k次，那么
+  f(n,l,k)=f(n-1,l-1,k)*n+f(n,l-1,k)*(n-k)
+"""
+
+class Solution:
+    def numMusicPlaylists(self, N: int, L: int, K: int) -> int:
+        dp = [[0] * (L + 1) for _ in range(N + 1)]
+        for n in range(K + 1, N + 1):
+            for l in range(n, L + 1):
+                if n == l or n == K + 1:
+                    dp[n][l] = self.fctorial(n)
+                else:
+                    dp[n][l] = dp[n - 1][l - 1] * n + dp[n][l - 1] * (n - K)
+        return dp[N][L] % (10 ** 9 + 7)
+
+    def fctorial(self, n):
+        f = 1
+        for i in range(2, n + 1):
+            f *= i
+        return f
